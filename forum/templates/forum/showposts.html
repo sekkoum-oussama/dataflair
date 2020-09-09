@@ -1,0 +1,57 @@
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    {% for post in posts %}
+    <div>
+        <p>Author: {{ post.author }}</p>
+        <p>Title: {{ post.title }}</p>
+        <p>Content: {{ post.content }}</p>
+        {% if post.published is False %}
+        <button id="{{ post.id }}" class="publish btn btn-danger btn-md">Publish</button>
+        {% else %}
+        {% csrf_token %}
+        <button id="{{ post.id }}" class="unpublish btn btn-success btn-md">Unpublish</button>
+        {% endif %}
+    </div>
+    
+    {% endfor %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>
+        $('.publish').live('click', function() {
+            var id = $(this).attr("id");
+            $.ajax({
+                type: 'GET',
+                url: 'publishpost',
+                data: {
+                    id: id,
+                },
+                success: function(data) {
+                    if(data == 'published') {
+                        $("#"+id).removeClass();
+                        $("#"+id).text('Unpublish');
+                        $("#"+id).addClass('unpublish btn btn-success btn-md');   
+                    }
+                }
+            })
+        })
+        
+        $('.unpublish').live('click', function() {
+            var id = $(this).attr("id");
+            $.ajax({
+                type: 'GET',
+                url: 'unpublishpost',
+                data: {
+                    id: id,
+                },
+                success: function(data) {
+                    if(data == 'unpublished') {
+                        $("#"+id).removeClass();
+                        $("#"+id).text('Publish');
+                        $("#"+id).addClass('publish btn btn-danger btn-md');   
+                    }
+                }
+            })
+        })
+    </script>
+</body>
